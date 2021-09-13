@@ -24,6 +24,11 @@ class user extends Sequelize.Model {
       type: DataTypes.STRING(255),
       allowNull: false
     },
+    role: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+      defaultValue: 0
+    },
     balance: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,

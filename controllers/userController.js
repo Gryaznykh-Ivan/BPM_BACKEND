@@ -4,9 +4,9 @@ const jwt = require('jsonwebtoken');
 const { v4: uuid } = require('uuid');
 const { User, Refresh_token } = require('../models');
 
-const generateJwt = (id, email) => {
+const generateJwt = (id, email, role) => {
     return jwt.sign(
-        { id, email },
+        { id, email, role },
         process.env.SECRET,
         { expiresIn: '15m' }
     )
@@ -39,7 +39,7 @@ const register = async ctx => {
 
         ctx.body = {
             success: true,
-            token: generateJwt(user.user_id, user.name),
+            token: generateJwt(user.user_id, user.name, user.role),
             refresh_token: refresh
         }
     } catch (err) {
@@ -67,7 +67,7 @@ const login = async ctx => {
 
         ctx.body = {
             success: true,
-            token: generateJwt(user.user_id, user.name),
+            token: generateJwt(user.user_id, user.name, user.role),
             refresh_token: refresh
         }
     } catch (err) {
@@ -85,7 +85,7 @@ const refresh = async ctx => {
     });
 
     if (!refresh || !refresh.User) {
-        ctx.throw(400, 'Refresh_token указан неверно');
+        return ctx.throw(400, 'Refresh_token указан неверно');
     }
 
     try {
@@ -94,7 +94,7 @@ const refresh = async ctx => {
 
         ctx.body = {
             success: true,
-            token: generateJwt(refresh.User.user_id, refresh.User.name),
+            token: generateJwt(refresh.User.user_id, refresh.User.name, refresh.User.role),
             refresh_token: newRefresh
         }
     } catch (err) {
