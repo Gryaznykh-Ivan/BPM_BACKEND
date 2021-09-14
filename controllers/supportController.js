@@ -46,7 +46,9 @@ const create = async ctx => {
     const { email, title, question } = ctx.request.body;
 
     const support = await Support.create({ email, title, question });
-    if (!support) return ctx.throw(400, "Ошибка при создании запроса")
+    if (!support) {
+        return ctx.throw(400, "Ошибка при создании запроса");
+    }
 
     ctx.status = 201;
     ctx.body = { success: true, data: support }
