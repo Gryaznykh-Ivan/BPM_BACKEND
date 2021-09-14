@@ -12,6 +12,10 @@ class user extends Sequelize.Model {
       allowNull: false,
       primaryKey: true
     },
+    email: {
+      type: DataTypes.STRING(45),
+      allowNull: false
+    },
     name: {
       type: DataTypes.STRING(45),
       allowNull: false
