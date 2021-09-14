@@ -11,6 +11,6 @@ router.delete('/faq/delete/:id', faqController.remove);
 
 // supportController
 router.get('/support/getList', supportController.getList);
-router.get('/support/get', supportController.get);
+router.get('/support/get/:id', supportController.get);
 
 module.exports = router.routes();

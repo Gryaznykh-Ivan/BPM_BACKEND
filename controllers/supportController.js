@@ -1,7 +1,7 @@
 const { Support } = require('../models')
 
 const getList = async ctx => {
-    const { skip=0, limit=20 } = ctx.request.body;
+    const { skip=0, limit=20 } = ctx.request.query;
 
     if (limit > 20 || limit < 1 || skip < 0) {
         return ctx.throw(400, "Limit должен быть =< 20 и > 0. Skip должен быть > 0.");
