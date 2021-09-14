@@ -10,6 +10,7 @@ const License_bit = require("./License_bit")(sequelize, DataTypes);
 const License_type = require("./License_type")(sequelize, DataTypes);
 const Refresh_token = require("./Refresh_token")(sequelize, DataTypes);
 const Replenishment_history = require("./Replenishment_history")(sequelize, DataTypes);
+const Support = require("./support")(sequelize, DataTypes);
 const User = require("./User")(sequelize, DataTypes);
 
 Bit.belongsToMany(License, { as: 'License_id_Licenses', through: License_bit, foreignKey: "bit_id", otherKey: "License_id" });
@@ -46,5 +47,6 @@ module.exports = {
   License_type,
   Refresh_token,
   Replenishment_history,
+  Support,
   User,
 };
