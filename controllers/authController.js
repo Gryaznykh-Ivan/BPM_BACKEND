@@ -32,7 +32,7 @@ const register = async ctx => {
     const hash = await bcrypt.hash(password, salt)
 
     try {
-        const user = await User.create({ name: email, password: hash });
+        const user = await User.create({ email, name: email, password: hash });
 
         const refresh = uuid();
         await Refresh_token.create({ token: refresh, user_id: user.user_id });
