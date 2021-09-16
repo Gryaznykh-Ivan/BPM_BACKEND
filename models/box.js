@@ -16,7 +16,7 @@ class box extends Sequelize.Model {
       type: DataTypes.STRING(45),
       allowNull: false
     },
-    image: {
+    photo: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       references: {
@@ -41,7 +41,7 @@ class box extends Sequelize.Model {
         name: "image_box_fk_idx",
         using: "BTREE",
         fields: [
-          { name: "image" },
+          { name: "photo" },
         ]
       },
     ]

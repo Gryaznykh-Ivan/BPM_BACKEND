@@ -32,7 +32,7 @@ class bit extends Sequelize.Model {
       type: DataTypes.STRING(255),
       allowNull: false
     },
-    image: {
+    photo: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
@@ -64,7 +64,7 @@ class bit extends Sequelize.Model {
         name: "image_bit_fk_idx",
         using: "BTREE",
         fields: [
-          { name: "image" },
+          { name: "photo" },
         ]
       },
     ]

@@ -36,14 +36,14 @@ Refresh_token.belongsTo(User, { as: "User", foreignKey: "User_id" });
 User.hasMany(Refresh_token, { as: "Refresh_tokens", foreignKey: "User_id" });
 Replenishment_history.belongsTo(User, { as: "User", foreignKey: "User_id" });
 User.hasMany(Replenishment_history, { as: "replenishment_histories", foreignKey: "User_id" });
-Bit.belongsTo(Image, { as: "image_image", foreignKey: "image" });
-Image.hasMany(Bit, { as: "bits", foreignKey: "image" });
-Bitmaker.belongsTo(Image, { as: "image_image", foreignKey: "image" });
-Image.hasMany(Bitmaker, { as: "bitmakers", foreignKey: "image" });
-Box.belongsTo(Image, { as: "image_image", foreignKey: "image" });
-Image.hasMany(Box, { as: "boxes", foreignKey: "image" });
-User.belongsTo(Image, { as: "image_image", foreignKey: "image" });
-Image.hasMany(User, { as: "users", foreignKey: "image" });
+Bit.belongsTo(Image, { as: "photo_image", foreignKey: "photo" });
+Image.hasMany(Bit, { as: "bits", foreignKey: "photo" });
+Bitmaker.belongsTo(Image, { as: "photo_image", foreignKey: "photo" });
+Image.hasMany(Bitmaker, { as: "bitmakers", foreignKey: "photo" });
+Box.belongsTo(Image, { as: "photo_image", foreignKey: "photo" });
+Image.hasMany(Box, { as: "boxes", foreignKey: "photo" });
+User.belongsTo(Image, { as: "photo_image", foreignKey: "photo" });
+Image.hasMany(User, { as: "users", foreignKey: "photo" });
 
 module.exports = {
   Bit,

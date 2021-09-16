@@ -16,9 +16,9 @@ class bitmaker extends Sequelize.Model {
       type: DataTypes.STRING(45),
       allowNull: false
     },
-    image: {
+    photo: {
       type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'image',
         key: 'image_id'
@@ -41,7 +41,7 @@ class bitmaker extends Sequelize.Model {
         name: "image_bitmaker_fk_idx",
         using: "BTREE",
         fields: [
-          { name: "image" },
+          { name: "photo" },
         ]
       },
     ]
