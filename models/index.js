@@ -12,6 +12,7 @@ const Refresh_token = require("./Refresh_token")(sequelize, DataTypes);
 const Replenishment_history = require("./Replenishment_history")(sequelize, DataTypes);
 const Support = require("./support")(sequelize, DataTypes);
 const User = require("./User")(sequelize, DataTypes);
+const Image = require("./Image")(sequelize, DataTypes);
 
 Bit.belongsToMany(License, { as: 'License_id_Licenses', through: License_bit, foreignKey: "bit_id", otherKey: "License_id" });
 License.belongsToMany(Bit, { as: 'bit_id_bits', through: License_bit, foreignKey: "License_id", otherKey: "bit_id" });
@@ -35,6 +36,14 @@ Refresh_token.belongsTo(User, { as: "User", foreignKey: "User_id" });
 User.hasMany(Refresh_token, { as: "Refresh_tokens", foreignKey: "User_id" });
 Replenishment_history.belongsTo(User, { as: "User", foreignKey: "User_id" });
 User.hasMany(Replenishment_history, { as: "replenishment_histories", foreignKey: "User_id" });
+Bit.belongsTo(Image, { as: "image_image", foreignKey: "image" });
+Image.hasMany(Bit, { as: "bits", foreignKey: "image" });
+Bitmaker.belongsTo(Image, { as: "image_image", foreignKey: "image" });
+Image.hasMany(Bitmaker, { as: "bitmakers", foreignKey: "image" });
+Box.belongsTo(Image, { as: "image_image", foreignKey: "image" });
+Image.hasMany(Box, { as: "boxes", foreignKey: "image" });
+User.belongsTo(Image, { as: "image_image", foreignKey: "image" });
+Image.hasMany(User, { as: "users", foreignKey: "image" });
 
 module.exports = {
   Bit,
@@ -49,4 +58,5 @@ module.exports = {
   Replenishment_history,
   Support,
   User,
+  Image,
 };

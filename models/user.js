@@ -20,9 +20,13 @@ class user extends Sequelize.Model {
       type: DataTypes.STRING(45),
       allowNull: false
     },
-    avatar: {
-      type: DataTypes.STRING(255),
-      allowNull: true
+    image: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+      references: {
+        model: 'image',
+        key: 'image_id'
+      }
     },
     password: {
       type: DataTypes.STRING(255),
@@ -63,6 +67,13 @@ class user extends Sequelize.Model {
         using: "BTREE",
         fields: [
           { name: "user_id" },
+        ]
+      },
+      {
+        name: "image_user_fk_idx",
+        using: "BTREE",
+        fields: [
+          { name: "image" },
         ]
       },
     ]

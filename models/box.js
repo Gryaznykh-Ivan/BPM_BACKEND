@@ -17,8 +17,12 @@ class box extends Sequelize.Model {
       allowNull: false
     },
     image: {
-      type: DataTypes.STRING(255),
-      allowNull: true
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+      references: {
+        model: 'image',
+        key: 'image_id'
+      }
     }
   }, {
     sequelize,
@@ -31,6 +35,13 @@ class box extends Sequelize.Model {
         using: "BTREE",
         fields: [
           { name: "case_id" },
+        ]
+      },
+      {
+        name: "image_box_fk_idx",
+        using: "BTREE",
+        fields: [
+          { name: "image" },
         ]
       },
     ]

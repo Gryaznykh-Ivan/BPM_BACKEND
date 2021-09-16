@@ -25,14 +25,9 @@ class support extends Sequelize.Model {
       allowNull: false
     },
     read: {
-      type: DataTypes.TINYINT.UNSIGNED,
+      type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: 0
-    },
-    date: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     }
   }, {
     sequelize,

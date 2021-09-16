@@ -1,32 +1,32 @@
 const Sequelize = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  return bitmaker.init(sequelize, DataTypes);
+  return image.init(sequelize, DataTypes);
 }
 
-class bitmaker extends Sequelize.Model {
+class image extends Sequelize.Model {
   static init(sequelize, DataTypes) {
   super.init({
-    bitmaker_id: {
+    image_id: {
       autoIncrement: true,
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       primaryKey: true
     },
-    name: {
+    title: {
       type: DataTypes.STRING(45),
       allowNull: false
     },
-    image: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: true,
-      references: {
-        model: 'image',
-        key: 'image_id'
-      }
+    link: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    },
+    path: {
+      type: DataTypes.STRING(255),
+      allowNull: false
     }
   }, {
     sequelize,
-    tableName: 'bitmaker',
+    tableName: 'image',
     timestamps: false,
     indexes: [
       {
@@ -34,18 +34,11 @@ class bitmaker extends Sequelize.Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "bitmaker_id" },
-        ]
-      },
-      {
-        name: "image_bitmaker_fk_idx",
-        using: "BTREE",
-        fields: [
-          { name: "image" },
+          { name: "image_id" },
         ]
       },
     ]
   });
-  return bitmaker;
+  return image;
   }
 }

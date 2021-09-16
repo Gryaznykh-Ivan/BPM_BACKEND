@@ -24,10 +24,6 @@ class bit extends Sequelize.Model {
       type: DataTypes.STRING(45),
       allowNull: false
     },
-    image: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
     belongs: {
       type: DataTypes.INTEGER,
       allowNull: true
@@ -35,6 +31,14 @@ class bit extends Sequelize.Model {
     path: {
       type: DataTypes.STRING(255),
       allowNull: false
+    },
+    image: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+      references: {
+        model: 'image',
+        key: 'image_id'
+      }
     }
   }, {
     sequelize,
@@ -54,6 +58,13 @@ class bit extends Sequelize.Model {
         using: "BTREE",
         fields: [
           { name: "author" },
+        ]
+      },
+      {
+        name: "image_bit_fk_idx",
+        using: "BTREE",
+        fields: [
+          { name: "image" },
         ]
       },
     ]

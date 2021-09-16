@@ -39,15 +39,6 @@ class license_bit extends Sequelize.Model {
         ]
       },
       {
-        name: "license_bit_license_id_bit_id_unique",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "license_id" },
-          { name: "bit_id" },
-        ]
-      },
-      {
         name: "bit_license_bit_fk_idx",
         using: "BTREE",
         fields: [
