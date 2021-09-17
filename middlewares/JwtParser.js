@@ -7,7 +7,7 @@ module.exports = async (ctx, next) => {
         
         ctx.request.token = decoded;
 
-        await next();
+        return next();
     } catch(err) {
         ctx.throw(401, err.message);
     }

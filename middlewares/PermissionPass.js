@@ -14,7 +14,7 @@ module.exports = async (ctx, next) => {
             return ctx.throw(403, "Доступ запрещен");
         }
 
-        await next();
+        return next();
     } catch(err) {
         ctx.throw(403, err.message);
     }
