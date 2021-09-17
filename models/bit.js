@@ -34,7 +34,7 @@ class bit extends Sequelize.Model {
     },
     photo: {
       type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'image',
         key: 'image_id'
