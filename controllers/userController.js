@@ -1,15 +1,38 @@
 const fs = require('fs');
 const { parseFormData } = require('./formDataController');
-const { User, Replenishment_history, Bits_history, Image } = require('../models');
+const { User, Replenishment_history, Bits_history, Image, Bit, Bitmaker } = require('../models');
 
 const profile = async ctx => {
     const { id } = ctx.request.token;
 
     const user = await User.findByPk(id, {
-        attributes: { exclude: ['vk_id', 'role', 'password'] },
+        attributes: { exclude: ['vk_id', 'role', 'password', 'photo'] },
         include: [
-            { model: Replenishment_history, as: "Replenishment_history", limit: 20 },
-            { model: Bits_history, as: "Bits_history", limit: 20 }
+            { model: Image, as: "photo_image", attributes: { exclude: ['image_id', 'path'] } },
+            { model: Replenishment_history, as: "replenishment_histories", limit: 20 },
+            {
+                model: Bits_history,
+                as: "bits_histories",
+                limit: 20,
+                attributes: ['bits_history_id', 'date', 'license_type'],
+                include: {
+                    model: Bit,
+                    as: "bit",
+                    attributes: ['bit_id', 'title'],
+                    include: {
+                        model: Bitmaker,
+                        as: "author_Bitmaker",
+                        include: {
+                            model: Image,
+                            as: "photo_image",
+                            attributes: { exclude: ['image_id', 'path', 'photo'] }
+                        }
+                    }
+                },
+                order: [
+                    ['date', 'DESC']
+                ]
+            }
         ]
     });
 
@@ -35,6 +58,7 @@ const replenishment_history = async ctx => {
         where: { user_id: id },
         offset: skip,
         limit,
+        attributes: { exclude: ['user_id'] },
         order: [
             ['date', 'DESC']
         ]
@@ -59,6 +83,22 @@ const bits_history = async ctx => {
         where: { user_id: id },
         offset: skip,
         limit,
+        attributes: ['bits_history_id', 'date', 'license_type'],
+        include: {
+            model: Bit,
+            as: "bit",
+            attributes: ['bit_id', 'title'],
+            include: {
+                model: Bitmaker,
+                as: "author_Bitmaker",
+                attributes: { exclude: ['photo'] },
+                include: {
+                    model: Image,
+                    as: "photo_image",
+                    attributes: { exclude: ['image_id', 'path', 'photo'] }
+                }
+            }
+        },
         order: [
             ['date', 'DESC']
         ]
@@ -92,7 +132,7 @@ const changeName = async ctx => {
 const changePhoto = async ctx => {
     const { id } = ctx.request.token;
 
-    const user = await User.findByPk(id, { include: { model: Image, as: "photo_image" }});
+    const user = await User.findByPk(id, { include: { model: Image, as: "photo_image" } });
     if (!user) {
         return ctx.throw(404, "Пользователь не найден");
     }
@@ -113,7 +153,7 @@ const changePhoto = async ctx => {
         path: files[0].path,
         link: files[0].link
     });
-    
+
     user.photo = newAvatar.image_id;
     await user.save();
 
