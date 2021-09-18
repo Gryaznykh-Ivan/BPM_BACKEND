@@ -115,7 +115,7 @@ const changeName = async ctx => {
     const { id } = ctx.request.token;
     const { newName } = ctx.request.body;
 
-    const user = await User.findByPk(id);
+    const user = await User.findByPk(id, { attributes: { exclude: ['vk_id', 'role', 'password', 'photo'] } });
     if (!user) {
         return ctx.throw(404, "Пользователь не найден");
     }
@@ -124,7 +124,8 @@ const changeName = async ctx => {
     await user.save();
 
     ctx.body = {
-        success: true
+        success: true,
+        data: user
     }
 }
 
@@ -132,7 +133,12 @@ const changeName = async ctx => {
 const changePhoto = async ctx => {
     const { id } = ctx.request.token;
 
-    const user = await User.findByPk(id, { include: { model: Image, as: "photo_image" } });
+    const user = await User.findByPk(id,
+    { 
+        include: { model: Image, as: "photo_image", attributes: { exclude: ['image_id', 'path', 'photo'] } },
+        attributes: { exclude: ['vk_id', 'role', 'password', 'photo'] }
+    });
+
     if (!user) {
         return ctx.throw(404, "Пользователь не найден");
     }
@@ -157,7 +163,7 @@ const changePhoto = async ctx => {
     user.photo = newAvatar.image_id;
     await user.save();
 
-    ctx.body = { success: true }
+    ctx.body = { success: true, data: user }
 }
 
 module.exports = {
