@@ -54,10 +54,13 @@ const create = async ctx => {
     ctx.body = { success: true, data: support }
 }
 
-
+const reply = async ctx => {
+    
+} 
 
 module.exports = {
     getList,
     get,
-    create
+    create,
+    reply
 }

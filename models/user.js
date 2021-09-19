@@ -42,6 +42,16 @@ class user extends Sequelize.Model {
       allowNull: false,
       defaultValue: 0
     },
+    blocked: {
+      type: DataTypes.TINYINT.UNSIGNED,
+      allowNull: false,
+      defaultValue: 0
+    },
+    verified: {
+      type: DataTypes.TINYINT.UNSIGNED,
+      allowNull: false,
+      defaultValue: 0
+    },
     cases_opened: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,

@@ -1,8 +1,10 @@
 const bcrypt = require('bcrypt');
+const { enc, AES } = require("crypto-js");
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const { v4: uuid } = require('uuid');
 const { User, Refresh_token } = require('../models');
+const { sendVerificationLink } = require('./mailController');
 
 const generateJwt = (id, email, role) => {
     return jwt.sign(
@@ -10,6 +12,26 @@ const generateJwt = (id, email, role) => {
         process.env.SECRET,
         { expiresIn: process.env.STATE === 'production' ? '15m' : '7d' }
     )
+}
+
+const confirmRegistration = async ctx => {
+    const { encryptedId } = ctx.params;
+
+    const id = AES.decrypt(decodeURIComponent(encryptedId), process.env.SECRET).toString(enc.Utf8);
+
+    const user = await User.findByPk(id);
+    if (!user) {
+        return ctx.throw(400, "Пользователь не найден")
+    }
+
+    if (user.verified != 0) {
+        return ctx.throw(400, "Пользователь уже подтвердил регистрацию")
+    }
+
+    user.verified = 1;
+    await user.save();
+
+    ctx.redirect(`https://${process.env.SITE_BASE}/`);
 }
 
 const register = async ctx => {
@@ -28,22 +50,18 @@ const register = async ctx => {
         return ctx.throw(400, "Пользователь с таким email уже существует")
     }
 
-    const salt = await bcrypt.genSalt(10)
-    const hash = await bcrypt.hash(password, salt)
-
     try {
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hash(password, salt)
+
         const user = await User.create({ email, name: email, password: hash });
 
-        const refresh = uuid();
-        await Refresh_token.create({ token: refresh, user_id: user.user_id });
+        await sendVerificationLink(email, AES.encrypt(user.user_id.toString(), process.env.SECRET).toString());
 
         ctx.body = {
-            success: true,
-            token: generateJwt(user.user_id, user.name, user.role),
-            refresh_token: refresh
+            success: true
         }
     } catch (err) {
-        console.log(err);
         ctx.throw(400, 'Ошибка создания аккаунта');
     };
 }
@@ -54,6 +72,10 @@ const login = async ctx => {
     const user = await User.findOne({ where: { name: email } });
     if (!user) {
         return ctx.throw(400, "Пользователя с таким email не существует")
+    }
+
+    if (user.verified != 1) {
+        return ctx.throw(400, "Для завершения регистрации необходимо подтвердить почту")
     }
 
     const comparePassword = bcrypt.compareSync(password, user.password)
@@ -71,7 +93,6 @@ const login = async ctx => {
             refresh_token: refresh
         }
     } catch (err) {
-        console.log(err);
         ctx.throw(400, 'Ошибка авторизации');
     };
 }
@@ -98,7 +119,6 @@ const refresh = async ctx => {
             refresh_token: newRefresh
         }
     } catch (err) {
-        console.log(err);
         ctx.throw(400, 'Ошибка создания новой пары токенов');
     };
 }
@@ -106,5 +126,6 @@ const refresh = async ctx => {
 module.exports = {
     register,
     login,
-    refresh
+    refresh,
+    confirmRegistration
 }
