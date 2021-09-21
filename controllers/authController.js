@@ -31,7 +31,7 @@ const confirmRegistration = async ctx => {
     user.verified = 1;
     await user.save();
 
-    ctx.redirect(`https://${process.env.SITE_BASE}/`);
+    ctx.redirect(`https://${process.env.SITE_BASE}/?=register=true`);
 }
 
 const register = async ctx => {
