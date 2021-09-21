@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const sequelize = require('../db');
 const { enc, AES } = require("crypto-js");
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
@@ -50,18 +51,24 @@ const register = async ctx => {
         return ctx.throw(400, "Пользователь с таким email уже существует")
     }
 
+
+    const t = await sequelize.transaction();
+
     try {
         const salt = await bcrypt.genSalt(10)
         const hash = await bcrypt.hash(password, salt)
 
-        const user = await User.create({ email, name: email, password: hash });
+        const user = await User.create({ email, name: email, password: hash }, { transaction: t });
 
         await sendVerificationLink(email, AES.encrypt(user.user_id.toString(), process.env.SECRET).toString());
+        await t.commit();
 
         ctx.body = {
             success: true
         }
     } catch (err) {
+        console.log(err);
+        await t.rollback();
         ctx.throw(400, 'Ошибка создания аккаунта');
     };
 }
@@ -75,7 +82,8 @@ const login = async ctx => {
     }
 
     if (user.verified != 1) {
-        return ctx.throw(400, "Для завершения регистрации необходимо подтвердить почту")
+        await sendVerificationLink(email, AES.encrypt(user.user_id.toString(), process.env.SECRET).toString());
+        return ctx.throw(400, `На вашу почту ${ email } было выслоно повторное письмо. Для завершения регистрации необходимо подтвердить почту.`)
     }
 
     const comparePassword = bcrypt.compareSync(password, user.password)
