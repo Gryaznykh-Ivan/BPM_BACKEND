@@ -14,11 +14,11 @@ class user extends Sequelize.Model {
     },
     email: {
       type: DataTypes.STRING(45),
-      allowNull: false
+      allowNull: true
     },
     name: {
       type: DataTypes.STRING(45),
-      allowNull: false
+      allowNull: true
     },
     photo: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -30,7 +30,7 @@ class user extends Sequelize.Model {
     },
     password: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     role: {
       type: DataTypes.INTEGER.UNSIGNED,

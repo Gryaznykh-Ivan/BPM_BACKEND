@@ -1,3 +1,4 @@
+const axios = require('axios');
 const bcrypt = require('bcrypt');
 const sequelize = require('../db');
 const { enc, AES } = require("crypto-js");
@@ -83,7 +84,7 @@ const login = async ctx => {
 
     if (user.verified != 1) {
         await sendVerificationLink(email, AES.encrypt(user.user_id.toString(), process.env.SECRET).toString());
-        return ctx.throw(400, `На вашу почту ${ email } было выслоно повторное письмо. Для завершения регистрации необходимо подтвердить почту.`)
+        return ctx.throw(400, `На вашу почту ${email} было выслоно повторное письмо. Для завершения регистрации необходимо подтвердить почту.`)
     }
 
     const comparePassword = bcrypt.compareSync(password, user.password)
@@ -97,12 +98,47 @@ const login = async ctx => {
 
         ctx.body = {
             success: true,
-            token: generateJwt(user.user_id, user.name, user.role),
+            token: generateJwt(user.user_id, user.email, user.role),
             refresh_token: refresh
         }
     } catch (err) {
         ctx.throw(400, 'Ошибка авторизации');
     };
+}
+
+const vk = async ctx => {
+    const { code } = ctx.query;
+
+    try {
+        const result = await axios.get(`https://oauth.vk.com/access_token?client_id=${process.env.VK_APP_ID}&client_secret=${process.env.VK_APP_SECRET}&redirect_uri=${process.env.VK_APP_REDIRECT}&code=${code}`);
+        if (!result.data) {
+            ctx.throw(400, "Вк не передал данные пользователя. Возможно запрос отправлен не верно.");
+        }
+
+        let user = await User.findOne({ where: { vk_id: result.data.user_id } });
+        if (!user) {
+            user = await User.create({ vk_id: result.data.user_id, email: result.data.email, name: result.data.email });
+        }
+
+        const refresh = uuid();
+        await Refresh_token.create({ token: refresh, user_id: user.user_id });
+
+        const response = JSON.stringify({
+            success: true,
+            data: {
+                token: generateJwt(user.user_id, user.email, user.role),
+                refresh_token: refresh,
+                vk: result.data
+            }
+        });
+
+        const base64 = Buffer.from(response).toString('base64');
+
+        ctx.redirect(`https://${process.env.SITE_BASE}/login/?response=${base64}`);
+    }
+    catch (err) {
+        ctx.throw(400, "Ошибка авторизации");
+    }
 }
 
 const refresh = async ctx => {
@@ -135,5 +171,6 @@ module.exports = {
     register,
     login,
     refresh,
-    confirmRegistration
+    confirmRegistration,
+    vk
 }
