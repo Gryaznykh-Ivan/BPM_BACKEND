@@ -14,7 +14,7 @@ class bit extends Sequelize.Model {
     },
     author: {
       type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'bitmaker',
         key: 'bitmaker_id'
