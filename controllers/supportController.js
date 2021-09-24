@@ -1,4 +1,5 @@
 const { Support } = require('../models')
+const { sendMail } = require('./mailController');
 
 const getList = async ctx => {
     const { skip=0, limit=20 } = ctx.request.query;
@@ -55,7 +56,17 @@ const create = async ctx => {
 }
 
 const reply = async ctx => {
-    
+    const { to, subject, text } = ctx.request.body;
+
+    try {
+        await sendMail(to, subject, text);
+
+        ctx.body = {
+            success: true
+        }
+    } catch (err) {
+        ctx.throw(400, err.message)
+    }
 } 
 
 module.exports = {
