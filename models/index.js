@@ -14,6 +14,7 @@ const Support = require("./support")(sequelize, DataTypes);
 const User = require("./user")(sequelize, DataTypes);
 const Image = require("./image")(sequelize, DataTypes);
 const Category = require("./category")(sequelize, DataTypes);
+const File = require("./file")(sequelize, DataTypes);
 const Box_history = require("./box_history")(sequelize, DataTypes);
 
 Bit.belongsToMany(License, { as: 'License_id_Licenses', through: License_bit, foreignKey: "bit_id", otherKey: "License_id" });
@@ -50,6 +51,10 @@ Box_history.belongsTo(Box, { as: "case", foreignKey: "case_id"});
 Box.hasMany(Box_history, { as: "box_histories", foreignKey: "case_id"});
 Box.belongsTo(Category, { as: "category", foreignKey: "category_id"});
 Category.hasMany(Box, { as: "boxes", foreignKey: "category_id"});
+File.belongsTo(License_type, { as: "license_type_license_type", foreignKey: "license_type"});
+License_type.hasMany(File, { as: "files", foreignKey: "license_type"});
+File.belongsTo(Bit, { as: "bit", foreignKey: "bit_id"});
+Bit.hasMany(File, { as: "files", foreignKey: "bit_id"});
 
 module.exports = {
   Bit,
@@ -64,6 +69,7 @@ module.exports = {
   Replenishment_history,
   Support,
   User,
+  File,
   Image,
   Category,
   Box_history
