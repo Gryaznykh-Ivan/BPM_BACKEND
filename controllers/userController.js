@@ -135,7 +135,7 @@ const changePhoto = async ctx => {
 
     const user = await User.findByPk(id,
     { 
-        include: { model: Image, as: "photo_image", attributes: { exclude: ['image_id', 'path', 'photo'] } },
+        include: { model: Image, as: "photo_image" },
         attributes: { exclude: ['vk_id', 'role', 'password', 'photo'] }
     });
 
@@ -145,7 +145,7 @@ const changePhoto = async ctx => {
 
     if (user.photo_image) {
         if (fs.existsSync(user.photo_image.path)) {
-            fs.rmSync(user.photo_image.path);
+            fs.unlinkSync(user.photo_image.path);
 
             await user.photo_image.destroy();
             user.photo = null;
@@ -163,7 +163,7 @@ const changePhoto = async ctx => {
     user.photo = newAvatar.image_id;
     await user.save();
 
-    ctx.body = { success: true, data: user }
+    ctx.body = { success: true, photo: newAvatar.link }
 }
 
 module.exports = {

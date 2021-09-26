@@ -8,16 +8,16 @@ const pathToLink = (path) => {
         path = path.replace('\\', '/')
     } while (path.indexOf('\\') != -1)
 
-    return path;
+    return path.replace(process.env.APP_ROOT_FOLDER, '');
 }
 
-const parseFormData = (ctx, folder, multiples=false) => (
+const parseFormData = (ctx, folder) => (
     new Promise((resolve, reject) => {
         const form = new formidable({ keepExtensions: true });
 
         form.on('fileBegin', (formName, file) => {
             const name = [uuid(), file.name.split('.')[1]].join('.');
-            const randomPath = path.join('./static', folder, Math.floor(Math.random() * 100).toString(16).padStart(2, '0'));
+            const randomPath = path.join(__dirname, '../../static', folder, Math.floor(Math.random() * 100).toString(16).padStart(2, '0'));
             const fullPath = path.join(randomPath, name);
 
             if (!fs.existsSync(randomPath)) fs.mkdirSync(randomPath, { recursive: true });
