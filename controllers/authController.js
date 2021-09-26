@@ -8,9 +8,9 @@ const { v4: uuid } = require('uuid');
 const { User, Refresh_token } = require('../models');
 const { sendVerificationLink } = require('./mailController');
 
-const generateJwt = (id, email, role) => {
+const generateJwt = (id, email, role, blocked) => {
     return jwt.sign(
-        { id, email, role },
+        { id, email, role, blocked },
         process.env.SECRET,
         { expiresIn: process.env.STATE === 'production' ? '15m' : '7d' }
     )
@@ -96,12 +96,15 @@ const login = async ctx => {
         const refresh = uuid();
         await Refresh_token.create({ token: refresh, user_id: user.user_id });
 
+        ctx.cookies.set('refresh_token', refresh, { httpOnly: true });
+
         ctx.body = {
             success: true,
-            token: generateJwt(user.user_id, user.email, user.role),
+            token: generateJwt(user.user_id, user.email, user.role, user.blocked),
             refresh_token: refresh
         }
     } catch (err) {
+        console.log(err)
         ctx.throw(400, 'Ошибка авторизации');
     };
 }
@@ -123,18 +126,16 @@ const vk = async ctx => {
         const refresh = uuid();
         await Refresh_token.create({ token: refresh, user_id: user.user_id });
 
-        const response = JSON.stringify({
+        ctx.cookies.set('refresh_token', refresh, { httpOnly: true });
+
+        ctx.body = {
             success: true,
             data: {
-                token: generateJwt(user.user_id, user.email, user.role),
+                token: generateJwt(user.user_id, user.email, user.role, user.blocked),
                 refresh_token: refresh,
                 vk: result.data
             }
-        });
-
-        const base64 = Buffer.from(response).toString('base64');
-
-        ctx.redirect(`https://${process.env.SITE_BASE}/login/?response=${base64}`);
+        }
     }
     catch (err) {
         ctx.throw(400, "Ошибка авторизации");
@@ -142,7 +143,7 @@ const vk = async ctx => {
 }
 
 const refresh = async ctx => {
-    const { refresh_token } = ctx.request.body;
+    const refresh_token = ctx.cookies.get('refresh_token');
 
     const refresh = await Refresh_token.findOne({
         where: { token: refresh_token },
@@ -157,9 +158,11 @@ const refresh = async ctx => {
         const newRefresh = uuid();
         await refresh.update({ date: Date.now(), token: newRefresh });
 
+        ctx.cookies.set('refresh_token', newRefresh, { httpOnly: true });
+
         ctx.body = {
             success: true,
-            token: generateJwt(refresh.User.user_id, refresh.User.name, refresh.User.role),
+            token: generateJwt(refresh.User.user_id, refresh.User.name, refresh.User.role, refresh.User.blocked),
             refresh_token: newRefresh
         }
     } catch (err) {

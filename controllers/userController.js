@@ -25,7 +25,7 @@ const profile = async ctx => {
                         include: {
                             model: Image,
                             as: "photo_image",
-                            attributes: { exclude: ['image_id', 'path', 'photo'] }
+                            attributes: { exclude: ['image_id', 'path'] }
                         }
                     }
                 },
@@ -95,7 +95,7 @@ const bits_history = async ctx => {
                 include: {
                     model: Image,
                     as: "photo_image",
-                    attributes: { exclude: ['image_id', 'path', 'photo'] }
+                    attributes: { exclude: ['image_id', 'path'] }
                 }
             }
         },
@@ -146,10 +146,10 @@ const changePhoto = async ctx => {
     if (user.photo_image) {
         if (fs.existsSync(user.photo_image.path)) {
             fs.unlinkSync(user.photo_image.path);
-
-            await user.photo_image.destroy();
-            user.photo = null;
         }
+
+        await user.photo_image.destroy();
+        user.photo = null;
     }
 
     const { files } = await parseFormData(ctx, 'images');
