@@ -44,7 +44,7 @@ const register = async ctx => {
     }
 
     if (!validator.isStrongPassword(password)) {
-        return ctx.throw(400, "Пароль должен содержать не менее 1 символa, не менее 1 цыфры, не менее 1 буквы в верхнем регистре")
+        return ctx.throw(400, "Пароль должен содержать не менее 1 символa, не менее 1 цифры, не менее 1 буквы в верхнем регистре")
     }
 
     const user = await User.findOne({ where: { name: email } });

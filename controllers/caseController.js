@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { parseFormData } = require('./formDataController');
-const { Box, Image, Category } = require('../models');
+const { Box, Image, Category, License } = require('../models');
 
 const getList = async ctx => {
     const boxs = await Box.findAll({
@@ -39,11 +39,10 @@ const getCasesByCategories = async ctx => {
 }
 
 const edit = async ctx => {
-    const { id, ...rest } = ctx.request.body;
+    const { id } = ctx.params;
+    const data = ctx.request.body;
 
-    const result = await Box.update(rest, { where: { case_id: id } });
-
-    console.log(result);
+    const result = await Box.update(data, { where: { case_id: id } });
 
     ctx.body = {
         success: !!result[0]
@@ -63,7 +62,8 @@ const create = async ctx => {
 }
 
 const changePhoto = async ctx => {
-    const { files, fields: { id } } = await parseFormData(ctx, 'images');
+    const { id } = ctx.params;
+    const { files } = await parseFormData(ctx, 'images');
 
     if (!id) {
         ctx.throw(400, "id обязательное поле");
@@ -102,16 +102,55 @@ const changePhoto = async ctx => {
 }
 
 const remove = async ctx => {
-    const { id } = ctx.request.body;
+    const { id } = ctx.params;
 
     const result = await Box.destroy({ where: { case_id: id } });
 
     ctx.body = { success: !!result }
 }
 
+
+const addLicense = async ctx => {
+    const { id } = ctx.params;
+    const { type, probability } = ctx.request.body;
+
+    const licese = await License.create({ case_id: id, type, probability });
+    if (!licese) {
+        ctx.throw(400, "Создать лицензию не удалось");
+    }
+
+    ctx.body = {
+        success: true
+    }
+}
+
+const changeLicenseProbability = async ctx => {
+    const { id } = ctx.params;
+    const { license_id, probability } = ctx.request.body;
+
+    const result = await License.update({ probability }, { where: { case_id: id, license_id  } });
+
+    ctx.body = {
+        success: !!result[0]
+    }
+}
+
+const removeLicense = async ctx => {
+    const { id } = ctx.params;
+    const { license_id } = ctx.request.body;
+
+    const result = await License.destroy({ where: { license_id, case_id: id } });
+
+    ctx.body = { success: !!result }
+}
+
+
 module.exports = {
     getCasesByCategories,
     getList,
+    addLicense,
+    changeLicenseProbability,
+    removeLicense,
     edit,
     create,
     changePhoto,
