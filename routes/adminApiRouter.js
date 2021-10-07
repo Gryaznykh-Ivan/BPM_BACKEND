@@ -19,7 +19,7 @@ router.post('/support/reply', supportController.reply);
 // caseController 
 router.get('/case/getList', caseController.getList);
 router.post('/case/create', caseController.create);
-router.post('/case/:id/addLicese', caseController.addLicense);
+router.post('/case/:id/addLicense', caseController.addLicense);
 
 router.put('/case/:id/edit', caseController.edit);
 router.put('/case/:id/changeLicenseProbability', caseController.changeLicenseProbability);
