@@ -1,6 +1,6 @@
 const { Faq } = require('../models');
 
-const getAll = async ctx => {
+const getList = async ctx => {
     const faq = await Faq.findAll({});
 
     ctx.body = { success: true, data: faq }
@@ -36,7 +36,7 @@ const remove = async ctx => {
 }
 
 module.exports = {
-    getAll,
+    getList,
     create,
     update,
     remove

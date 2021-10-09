@@ -6,7 +6,7 @@ const caseController = require('../controllers/caseController');
 const router = new Router().prefix('/api');
 
 // faqController
-router.get('/faq/getAll', faqController.getAll);
+router.get('/faq/getList', faqController.getList);
 
 // supportController
 router.post('/support/create', supportController.create);

@@ -38,7 +38,7 @@ const getCasesByCategories = async ctx => {
     }
 }
 
-const edit = async ctx => {
+const update = async ctx => {
     const { id } = ctx.params;
     const data = ctx.request.body;
 
@@ -64,10 +64,6 @@ const create = async ctx => {
 const changePhoto = async ctx => {
     const { id } = ctx.params;
     const { files } = await parseFormData(ctx, 'images');
-
-    if (!id) {
-        ctx.throw(400, "id обязательное поле");
-    }
 
     const box = await Box.findByPk(id, {
         include: {
@@ -151,7 +147,7 @@ module.exports = {
     addLicense,
     changeLicenseProbability,
     removeLicense,
-    edit,
+    update,
     create,
     changePhoto,
     remove
