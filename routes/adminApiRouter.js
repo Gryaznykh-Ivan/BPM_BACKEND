@@ -13,8 +13,8 @@ router.delete('/faq/:id/delete', faqController.remove);
 
 // supportController
 router.get('/support/getList', supportController.getList);
-router.get('/support/get/:id', supportController.get);
-router.post('/support/reply', supportController.reply);
+router.get('/support/:id', supportController.get);
+router.post('/support/:id/reply', supportController.reply);
 
 // caseController 
 router.get('/case/getList', caseController.getList);
@@ -30,5 +30,9 @@ router.delete('/case/:id/remove', caseController.remove);
 
 // licenseController
 router.get('/license/getList', licenseController.getList);
+
+// bitmakerController
+
+// bitController
 
 module.exports = router.routes();

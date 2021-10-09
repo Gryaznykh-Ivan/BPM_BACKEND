@@ -5,7 +5,7 @@ const getList = async ctx => {
     const { skip=0, limit=20 } = ctx.request.query;
 
     if (limit > 20 || limit < 1 || skip < 0) {
-        return ctx.throw(400, "Limit должен быть =< 20 и > 0. Skip должен быть > 0.");
+        ctx.throw(400, "Limit должен быть =< 20 и > 0. Skip должен быть > 0.");
     }
 
     const { count, rows } = await Support.findAndCountAll({
@@ -28,7 +28,7 @@ const get = async ctx => {
 
     const support = await Support.findOne({ where: { support_id: id } });
     if (!support) {
-        return ctx.throw(404, "Обращений в службу поддержки не найдено");
+        ctx.throw(404, "Обращений в службу поддержки не найдено");
     }
 
     if (!support.read) {
@@ -38,8 +38,7 @@ const get = async ctx => {
 
     ctx.body = {
         success: true,
-        data: support,
-        link: `https://mail.google.com/mail/u/0/?fs=1&to=${ support.email }&su=${ support.title }&tf=cm`
+        data: support
     }
 }
 
@@ -48,7 +47,7 @@ const create = async ctx => {
 
     const support = await Support.create({ email, title, question });
     if (!support) {
-        return ctx.throw(400, "Ошибка при создании запроса");
+        ctx.throw(400, "Ошибка при создании запроса");
     }
 
     ctx.status = 201;
@@ -56,10 +55,16 @@ const create = async ctx => {
 }
 
 const reply = async ctx => {
-    const { to, subject, text } = ctx.request.body;
+    const { id } = ctx.params;
+    const { subject, text } = ctx.request.body;
+
+    const support = await Support.findOne({ where: { support_id: id } });
+    if (!support) {
+        ctx.throw(404, "Обращений в службу поддержки не найдено");
+    }
 
     try {
-        await sendMail(to, subject, text);
+        await sendMail(support.email, subject, text);
 
         ctx.body = {
             success: true
