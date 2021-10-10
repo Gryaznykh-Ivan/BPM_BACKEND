@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { parseFormData } = require('./formDataController');
-const { Box, Image, Category, License } = require('../models');
+const { Box, Image, Category, License, License_bit } = require('../models');
 
 const getList = async ctx => {
     const boxs = await Box.findAll({
@@ -58,6 +58,7 @@ const create = async ctx => {
 
     const box = await Box.create({ title, price, ...rest });
 
+    ctx.status = 201;
     ctx.body = { success: true, data: box }
 }
 
@@ -115,16 +116,17 @@ const addLicense = async ctx => {
         ctx.throw(400, "Создать лицензию не удалось");
     }
 
+    ctx.status = 201;
     ctx.body = {
         success: true
     }
 }
 
 const changeLicenseProbability = async ctx => {
-    const { id } = ctx.params;
-    const { license_id, probability } = ctx.request.body;
+    const { license_id } = ctx.params;
+    const { probability } = ctx.request.body;
 
-    const result = await License.update({ probability }, { where: { case_id: id, license_id  } });
+    const result = await License.update({ probability }, { where: { license_id } });
 
     ctx.body = {
         success: !!result[0]
@@ -132,13 +134,71 @@ const changeLicenseProbability = async ctx => {
 }
 
 const removeLicense = async ctx => {
-    const { id } = ctx.params;
-    const { license_id } = ctx.request.body;
+    const { license_id } = ctx.params;
 
-    const result = await License.destroy({ where: { license_id, case_id: id } });
+    const result = await License.destroy({ where: { license_id } });
 
     ctx.body = { success: !!result }
 }
+
+const getLicense = async ctx => {
+    const { license_id } = ctx.params;
+    const { skip = 0, limit = 20 } = ctx.request.query;
+
+    if (limit > 20 || limit < 1 || skip < 0) {
+        ctx.throw(400, "Limit должен быть =< 20 и > 0. Skip должен быть > 0.");
+    }
+
+    const { count, rows } = await Bit.findAndCountAll({
+        offset: skip,
+        limit,
+        order: [
+            ['bit_id', 'DESC']
+        ]
+    })
+
+    const license = await License.findByPk(license_id, {
+        include: {
+            model: License_bit,
+            as: 'License_bits',
+            offset: skip,
+            limit,
+            order: [
+                ['bit_id', 'DESC']
+            ]
+        }
+    })
+
+    if (!license) {
+        ctx.throw(404, "Лицензия не найдена");
+    }
+
+    ctx.body = {
+        success: true,
+        data: license
+    }
+}
+
+const addLicenseBit = async ctx => {
+    const { license_id } = ctx.params;
+    const { bit_id } = ctx.request.body;
+
+    const license_bit = await License_bit.create({ license_id, bit_id });
+    if (!license_bit) ctx.throw(400, "Ошибка при создании license_bit")
+
+    ctx.status = 201;
+    ctx.body = { success: true, data: license_bit }
+}
+
+const removeLicenseBit = async ctx => {
+    const { license_id } = ctx.params;
+    const { bit_id } = ctx.request.body;
+
+    const license_bit = await License_bit.destroy({ where: { license_id, bit_id } });
+
+    ctx.body = { success: !!license_bit }
+}
+
 
 
 module.exports = {
@@ -150,5 +210,8 @@ module.exports = {
     update,
     create,
     changePhoto,
-    remove
+    remove,
+    getLicense,
+    addLicenseBit,
+    removeLicenseBit
 }

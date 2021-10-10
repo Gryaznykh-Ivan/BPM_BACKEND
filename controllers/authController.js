@@ -64,6 +64,7 @@ const register = async ctx => {
         await sendVerificationLink(email, AES.encrypt(user.user_id.toString(), process.env.SECRET).toString());
         await t.commit();
 
+        ctx.status = 201;
         ctx.body = {
             success: true
         }

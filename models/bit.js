@@ -28,10 +28,6 @@ class bit extends Sequelize.Model {
       type: DataTypes.INTEGER,
       allowNull: true
     },
-    path: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
     photo: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,

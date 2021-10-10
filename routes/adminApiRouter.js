@@ -23,13 +23,15 @@ router.post('/support/:id/reply', supportController.reply);
 router.get('/case/getList', caseController.getList);
 router.post('/case/create', caseController.create);
 router.post('/case/:id/addLicense', caseController.addLicense);
-
 router.put('/case/:id/update', caseController.update);
-router.put('/case/:id/changeLicenseProbability', caseController.changeLicenseProbability);
 router.put('/case/:id/changePhoto', caseController.changePhoto);
+router.delete('/case/:id/delete', caseController.remove);
 
-router.delete('/case/:id/removeLicense', caseController.removeLicense);
-router.delete('/case/:id/remove', caseController.remove);
+router.get('/case/:id/:license_id', caseController.getLicense);
+router.post('/case/:id/:license_id/addBit', caseController.addLicenseBit);
+router.delete('/case/:id/:license_id/removeBit', caseController.removeLicenseBit);
+router.put('/case/:id/:license_id/update', caseController.changeLicenseProbability);
+router.delete('/case/:id/:license_id/delete', caseController.removeLicense);
 
 // licenseController
 router.get('/license/getList', licenseController.getList);
@@ -49,9 +51,14 @@ router.delete('/bitmaker/:id/delete', bitmakerController.remove);
 
 // bitController
 router.get('/bit/getList', bitController.getList);
+router.get('/bit/getByName', bitController.getByName);
 router.post('/bit/create', bitController.create);
+router.get('/bit/:id', bitController.get); 
+router.post('/bit/:id/addFile', bitController.addFile);
 router.put('/bit/:id/update', bitController.update);
 router.put('/bit/:id/changePhoto', bitController.changePhoto);
 router.delete('/bit/:id/delete', bitController.remove);
+router.put('/bit/:id/:file_id/update', bitController.updateFile)
+router.delete('/bit/:id/:file_id/delete', bitController.removeFile)
 
 module.exports = router.routes();

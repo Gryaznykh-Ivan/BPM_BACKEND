@@ -12,7 +12,7 @@ const create = async ctx => {
     if (!question) return ctx.throw(400, "question не передан")
 
     const faq = await Faq.create({ question, reply });
-    if (!faq) return ctx.throw(400, "Ошибка при создании faq")
+    if (!faq) ctx.throw(400, "Ошибка при создании faq")
 
     ctx.status = 201;
     ctx.body = { success: true, data: faq }
