@@ -9,11 +9,11 @@ const getList = async ctx => {
     }
 
     const { count, rows } = await Support.findAndCountAll({
-        offset: skip,
-        limit,
         order: [
             ['support_id', 'DESC']
-        ]
+        ],
+        offset: Number(skip),
+        limit: Number(limit),
     })
 
     ctx.body = {

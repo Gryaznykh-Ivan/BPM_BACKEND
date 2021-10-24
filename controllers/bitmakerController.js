@@ -11,11 +11,16 @@ const getList = async ctx => {
     }
 
     const { count, rows } = await Bitmaker.findAndCountAll({
-        offset: skip,
-        limit,
         order: [
             ['bitmaker_id', 'DESC']
-        ]
+        ],
+        offset: Number(skip),
+        limit: Number(limit),
+        include: {
+            model: Image,
+            as: "photo_image",
+            attributes: { exclude: ['image_id', 'path'] }
+        }
     })
 
     ctx.body = {
