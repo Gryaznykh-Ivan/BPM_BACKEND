@@ -1,4 +1,6 @@
-const { Bitmaker } = require('../models')
+const { Bitmaker, Image } = require('../models')
+const { parseFormData } = require('./formDataController')
+const fs = require('fs');
 
 
 const getList = async ctx => {

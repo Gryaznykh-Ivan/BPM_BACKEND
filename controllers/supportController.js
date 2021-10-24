@@ -12,7 +12,7 @@ const getList = async ctx => {
         offset: skip,
         limit,
         order: [
-            ['date', 'DESC']
+            ['support_id', 'DESC']
         ]
     })
 

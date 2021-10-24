@@ -17,8 +17,8 @@ const Category = require("./category")(sequelize, DataTypes);
 const File = require("./file")(sequelize, DataTypes);
 const Box_history = require("./box_history")(sequelize, DataTypes);
 
-Bit.belongsToMany(License, { as: 'License_id_Licenses', through: License_bit, foreignKey: "bit_id", otherKey: "License_id" });
-License.belongsToMany(Bit, { as: 'bit_id_bits', through: License_bit, foreignKey: "License_id", otherKey: "bit_id" });
+Bit.belongsToMany(License, { as: 'licenses', through: License_bit, foreignKey: "bit_id", otherKey: "License_id" });
+License.belongsToMany(Bit, { as: 'bits', through: License_bit, foreignKey: "License_id", otherKey: "bit_id" });
 Bits_history.belongsTo(Bit, { as: "bit", foreignKey: "bit_id" });
 Bit.hasMany(Bits_history, { as: "bits_histories", foreignKey: "bit_id" });
 License_bit.belongsTo(Bit, { as: "bit", foreignKey: "bit_id" });

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { parseFormData } = require('./formDataController');
-const { Box, Image, Category, License, License_bit } = require('../models');
+const { Box, Image, Category, License, License_bit, Bit } = require('../models');
 
 const getList = async ctx => {
     const boxs = await Box.findAll({
@@ -148,31 +148,22 @@ const getLicense = async ctx => {
     if (limit > 20 || limit < 1 || skip < 0) {
         ctx.throw(400, "Limit должен быть =< 20 и > 0. Skip должен быть > 0.");
     }
-
-    const { count, rows } = await Bit.findAndCountAll({
-        offset: skip,
-        limit,
-        order: [
-            ['bit_id', 'DESC']
-        ]
-    })
-
+    
     const license = await License.findByPk(license_id, {
         include: {
-            model: License_bit,
-            as: 'License_bits',
-            offset: skip,
-            limit,
-            order: [
-                ['bit_id', 'DESC']
-            ]
+            model: Bit,
+            as: "bits",
+            include: {
+                model: Image,
+                as: "photo_image",
+                attributes: { exclude: ['image_id', 'path'] }
+            }
         }
-    })
-
+    });
     if (!license) {
         ctx.throw(404, "Лицензия не найдена");
     }
-
+    
     ctx.body = {
         success: true,
         data: license

@@ -12,7 +12,7 @@ const generateJwt = (id, email, role, blocked) => {
     return jwt.sign(
         { id, email, role, blocked },
         process.env.SECRET,
-        { expiresIn: process.env.STATE === 'production' ? '15m' : '7d' }
+        { expiresIn: process.env.STATE === 'production' ? '15m' : '1h' }
     )
 }
 
