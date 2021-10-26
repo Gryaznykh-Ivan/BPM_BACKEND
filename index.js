@@ -14,7 +14,7 @@ const app = new koa();
 app.use(sequelizeErrorHandler)
 
 app.use(bodyParser());
-app.use(cors());
+app.use(cors({ credentials: true }));
 app.use(router.routes());
 app.use(router.allowedMethods());
 
