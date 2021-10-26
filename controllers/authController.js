@@ -97,7 +97,7 @@ const login = async ctx => {
         const refresh = uuid();
         await Refresh_token.create({ token: refresh, user_id: user.user_id });
 
-        ctx.cookies.set('refresh_token', refresh, { httpOnly: true });
+        ctx.cookies.set('refresh_token', refresh, { domain: '.bpmdrop.com', overwrite: true });
 
         ctx.body = {
             success: true,
@@ -127,7 +127,7 @@ const vk = async ctx => {
         const refresh = uuid();
         await Refresh_token.create({ token: refresh, user_id: user.user_id });
 
-        ctx.cookies.set('refresh_token', refresh, { httpOnly: true });
+        ctx.cookies.set('refresh_token', refresh, { domain: '.bpmdrop.com', overwrite: true });
 
         ctx.body = {
             success: true,
@@ -146,20 +146,22 @@ const vk = async ctx => {
 const refresh = async ctx => {
     const refresh_token = ctx.cookies.get('refresh_token');
 
+    console.log(refresh_token);
+
     const refresh = await Refresh_token.findOne({
         where: { token: refresh_token },
         include: { model: User, as: "User" }
     });
 
     if (!refresh || !refresh.User) {
-        return ctx.throw(400, 'Refresh_token указан неверно');
+        return ctx.throw(400, 'Refresh_token не предоставлен');
     }
 
     try {
         const newRefresh = uuid();
         await refresh.update({ date: Date.now(), token: newRefresh });
 
-        ctx.cookies.set('refresh_token', newRefresh, { httpOnly: true });
+        ctx.cookies.set('refresh_token', newRefresh, { domain: '.bpmdrop.com', overwrite: true });
 
         ctx.body = {
             success: true,
