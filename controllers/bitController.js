@@ -1,7 +1,29 @@
 const fs = require('fs');
+const send = require('koa-send');
 const { parseFormData } = require('./formDataController');
 const { Op } = require('../db');
-const { Bit, File, Bitmaker, Image } = require('../models');
+const { Bit, File, Bitmaker, Image, Bits_history } = require('../models');
+
+const download = async ctx => {
+    const { id: userId } = ctx.request.token;
+    const { bit_id, license_type } = ctx.request.query;
+
+    const history = await Bits_history.findOne({ where: { bit_id, license_type, user_id: userId }});
+    if (!history) {
+        ctx.throw(403, "У вас нет прав на эту композицию");
+    }
+
+    const file = await File.findOne({ where: { bit_id, license_type }});
+    if (!file) {
+        ctx.throw(404, "Файл не был загружен на сервер. Обратитесь в тех поддержку.");
+    }
+    
+    if (!fs.existsSync(file.path)) {
+        ctx.throw(404, "Файл удален или поврежден. Обратитесь в тех поддержку");
+    }
+
+    await send(ctx, file.path, { root: '/' });
+}
 
 const getList = async ctx => {
     const { skip = 0, limit = 20 } = ctx.request.query;
@@ -11,11 +33,11 @@ const getList = async ctx => {
     }
 
     const { count, rows } = await Bit.findAndCountAll({
-        offset: skip,
-        limit,
         order: [
             ['bit_id', 'DESC']
-        ]
+        ],
+        offset: Number(skip),
+        limit: Number(limit)
     })
 
     ctx.body = {
@@ -34,11 +56,11 @@ const getByName = async ctx => {
 
     const { count, rows } = await Bit.findAndCountAll({
         where: { title: { [Op.like]: `%${q}%` } },
-        offset: skip,
-        limit,
         order: [
             ['bit_id', 'DESC']
-        ]
+        ],
+        offset: Number(skip),
+        limit: Number(limit)
     })
 
     ctx.body = {
@@ -198,6 +220,7 @@ const remove = async ctx => {
 
 
 module.exports = {
+    download,
     getList,
     getByName,
     get,

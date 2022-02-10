@@ -1,7 +1,11 @@
 const { Faq } = require('../models');
 
 const getList = async ctx => {
-    const faq = await Faq.findAll({});
+    const faq = await Faq.findAll({
+        order: [
+            ['faq_id', 'DESC']
+        ]
+    });
 
     ctx.body = { success: true, data: faq }
 }

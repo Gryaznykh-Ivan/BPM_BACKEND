@@ -55,13 +55,13 @@ const replenishment_history = async ctx => {
     }
 
     const { count, rows } = await Replenishment_history.findAndCountAll({
-        where: { user_id: id },
-        offset: skip,
-        limit,
         attributes: { exclude: ['user_id'] },
+        where: { user_id: id },
         order: [
             ['date', 'DESC']
-        ]
+        ],
+        offset: Number(skip),
+        limit: Number(limit)
     })
 
     ctx.body = {
@@ -81,9 +81,12 @@ const bits_history = async ctx => {
 
     const { count, rows } = await Bits_history.findAndCountAll({
         where: { user_id: id },
-        offset: skip,
-        limit,
         attributes: ['bits_history_id', 'date', 'license_type'],
+        order: [
+            ['date', 'DESC']
+        ],
+        offset: Number(skip),
+        limit: Number(limit),
         include: {
             model: Bit,
             as: "bit",
@@ -99,9 +102,6 @@ const bits_history = async ctx => {
                 }
             }
         },
-        order: [
-            ['date', 'DESC']
-        ]
     })
 
     ctx.body = {

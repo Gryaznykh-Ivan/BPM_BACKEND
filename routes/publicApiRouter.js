@@ -13,6 +13,7 @@ router.post('/support/create', supportController.create);
 
 // caseController
 router.get('/case/getCasesByCategories', caseController.getCasesByCategories);
+router.get('/case/getCaseContent/:id', caseController.getCaseContent);
 
 
 module.exports = router.routes();

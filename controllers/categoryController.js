@@ -2,7 +2,11 @@ const { Category } = require('../models')
 
 
 const getList = async ctx => {
-    const rows = await Category.findAll({});
+    const rows = await Category.findAll({
+        order: [
+            ['category_id', 'DESC']
+        ]
+    });
 
     ctx.body = {
         success: true,

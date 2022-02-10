@@ -22,6 +22,7 @@ router.post('/support/:id/reply', supportController.reply);
 // caseController 
 router.get('/case/getList', caseController.getList);
 router.post('/case/create', caseController.create);
+router.get('/case/:id', caseController.get);
 router.post('/case/:id/addLicense', caseController.addLicense);
 router.put('/case/:id/update', caseController.update);
 router.put('/case/:id/changePhoto', caseController.changePhoto);
